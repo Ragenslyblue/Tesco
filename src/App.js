@@ -17,63 +17,75 @@ import QuestionAnswer from "./component/QuestionAnswer/QuestionAnswer";
 import ResultComponent from "./component/ResultComponent/ResultComponent";
 import { dashboardteacherData } from "./utils/fakedata/fakedata";
 import { useState } from "react";
-import{QueryClientProvider,QueryClient } from 'react-query'
+import { QueryClientProvider, QueryClient } from "react-query";
+export const user = localStorage.getItem("tesco");
 function App() {
-  const[user,setUser]=useState("")
-  const queryClient=new QueryClient()
-  
+  console.log(user);
+  const [userL, setUser] = useState("");
+  const queryClient = new QueryClient();
+
   return (
     <QueryClientProvider client={queryClient}>
-       <div className="App">
-      {/* {authRoute.map((each, index) => (
+      <div className="App">
+        {/* {authRoute.map((each, index) => (
         <RoutePathComponent
           path={each?.path}
           component={each?.component}
           id={index}
         />
       ))} */}
-      
-      <Routes>
-        <Route path="/" element={<Login setUser={setUser}/>} />
-       
-       
-      </Routes>
-      {user==="admin"&&
-       <SideNavBar sideNavData={sideNavData} role="ADMIN" setUser={setUser}>
-       <Routes>
-       <Route path="/dashboard" element={<DashboardComponent data={dashboardcardData}/>} />
-       <Route path="/teacher" element={<TeacherComponent/>} />
-       <Route path="/question-choice" element={<QuestionChoice/>} />
-       <Route path="/topic" element={<TopicComponent/>}/>
-       <Route path="/question-answer" element={<QuestionAnswer/>}/>
-       <Route path="/result" element={<ResultComponent/>}/>
-       <Route path="/setting" element={<Setting/>}/>
-       </Routes>
-     
-     </SideNavBar>
-      }
-     {user==="teacher"&&
-      <SideNavBar sideNavData={sideNavDatas} role="Teacher" subType={true} setUser={setUser}>
-      <Routes>
-      <Route path="/dashboard/dashboard-teacher" element={<DashboardComponent data={dashboardteacherData}/>} />
-      <Route path="/dashboard/topic-teacher" element={<TopicComponent/>} />
-     
-      <Route path="/dashboard/question-teacher" element={<QuestionChoice/>} />
-      <Route path="/dashboard/result-teacher" element={<ResultComponent/>} />
-     
 
-      <Route path="/dashboard/setting-teacher" element={<Setting/>} />
-     
-     
-      </Routes>
-    
-    </SideNavBar>
-     }
-     
-     
-    </div>
+        <Routes>
+          <Route path="/" element={<Login setUser={setUser} />} />
+        </Routes>
+        {user === "admin" && (
+          <SideNavBar sideNavData={sideNavData} role="ADMIN" setUser={setUser}>
+            <Routes>
+              <Route
+                path="/dashboard"
+                element={<DashboardComponent data={dashboardcardData} />}
+              />
+              <Route path="/teacher" element={<TeacherComponent />} />
+              <Route path="/question-choice" element={<QuestionChoice />} />
+              <Route path="/topic" element={<TopicComponent />} />
+              <Route path="/question-answer" element={<QuestionAnswer />} />
+              <Route path="/result" element={<ResultComponent />} />
+              <Route path="/setting" element={<Setting />} />
+            </Routes>
+          </SideNavBar>
+        )}
+        {user === "teacher" && (
+          <SideNavBar
+            sideNavData={sideNavDatas}
+            role="Teacher"
+            subType={true}
+            setUser={setUser}
+          >
+            <Routes>
+              <Route
+                path="/dashboard/dashboard-teacher"
+                element={<DashboardComponent data={dashboardteacherData} />}
+              />
+              <Route
+                path="/dashboard/topic-teacher"
+                element={<TopicComponent />}
+              />
+
+              <Route
+                path="/dashboard/question-teacher"
+                element={<QuestionChoice />}
+              />
+              <Route
+                path="/dashboard/result-teacher"
+                element={<ResultComponent />}
+              />
+
+              <Route path="/dashboard/setting-teacher" element={<Setting />} />
+            </Routes>
+          </SideNavBar>
+        )}
+      </div>
     </QueryClientProvider>
-   
   );
 }
 
