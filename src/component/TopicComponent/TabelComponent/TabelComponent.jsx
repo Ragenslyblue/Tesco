@@ -14,15 +14,15 @@ import {
 import { Form, Field, Formik } from "formik";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
-import ModalComponent from "../../shared/Modal/Modal";
+import ModalComponent from "../../../shared/Modal/Modal";
 import {
   DeleteTeacherHook,
   editTeacher,
   GetSingleTeacherHook,
   UpdateTeacherHook,
   UseUpdate,
-} from "../../utils/CustomQuerHook/CustomQueryHook";
-import PaginationAdd from "../pagination/Pagination";
+} from "../../../utils/CustomQuerHook/CustomQueryHook";
+import PaginationAdd from "../../pagination/Pagination";
 
 import "./table.css";
 import Swal from "sweetalert2";
@@ -41,7 +41,11 @@ const TabelComponent = ({
   const [indexs, setIndex] = useState("");
 
   const { mutate, isError } = DeleteTeacherHook();
-  const{isError:editError,mutate:editMutate,isSuccess:editSuccess}=UseUpdate()
+  const {
+    isError: editError,
+    mutate: editMutate,
+    isSuccess: editSuccess,
+  } = UseUpdate();
 
   const handleClose = () => {
     setOpen(false);
@@ -74,15 +78,14 @@ const TabelComponent = ({
     });
   };
   const handleSubmitEdit = async (values) => {
-    const data={
-      id:ids,
-      username:values.userName,
-      lastname:values.lastName,
-      middlename:values.middleName,
-      firstname:values.firstName
-
-    }
-    editMutate(data)
+    const data = {
+      id: ids,
+      username: values.userName,
+      lastname: values.lastName,
+      middlename: values.middleName,
+      firstname: values.firstName,
+    };
+    editMutate(data);
     if (editSuccess && editSuccess) {
       setOpenEdit(false);
       Swal.fire({
@@ -105,7 +108,7 @@ const TabelComponent = ({
   // console.log(initialValues,'vaue')
   useEffect(() => {
     // console.log(indexs,'indexs')
-    console.log(cellData)
+    console.log(cellData);
     cellData?.data?.data?.map((each, index) => {
       if (index === indexs) {
         initialValues.firstName = each?.firstname;
@@ -148,13 +151,14 @@ const TabelComponent = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {cellData &&
-                cellData?.data?.data?.map((row, index) => (
+              {data &&
+                data?.map((row, index) => (
                   <TableRow key={index}>
                     <TableCell>{row.code}</TableCell>
                     <TableCell>{row.topic}</TableCell>
-                    <TableCell>{row.instructor}</TableCell>
+                    <TableCell>{row.instructor.firstname}</TableCell>
                     <TableCell>{row.datecreated}</TableCell>
+                    {console.log(row)}
                     <TableCell
                       style={{
                         display: "flex",

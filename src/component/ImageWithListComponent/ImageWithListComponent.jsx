@@ -13,7 +13,11 @@ import { MDBIcon, MDBInputGroup } from "mdb-react-ui-kit";
 import { motion } from "framer-motion";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
-import { UseCreateTeacherHooks } from "../../utils/CustomQuerHook/CustomQueryHook";
+import {
+  createTopic,
+  GetTeacherHook,
+  UseCreateTeacherHooks,
+} from "../../utils/CustomQuerHook/CustomQueryHook";
 import CircularIndeterminate from "../../shared/Spinner/Spinner";
 import Swal from "sweetalert2";
 
@@ -54,6 +58,21 @@ const teacherSchema = Yup.object().shape({
     .required("Required"),
 });
 
+const topicSchema = Yup.object().shape({
+  topic: Yup.string()
+    .min(2, "minimum 2 character")
+    .max(50, "maximum 50 character")
+    .required("Required"),
+  instructor: Yup.string()
+    .min(2, "minimum 2 character")
+    .max(50, "maximum 50 character")
+    .required("Required"),
+  year: Yup.string()
+    .min(2, "minimum 2 character")
+    .max(50, "maximum 50 character")
+    .required("Required"),
+});
+
 const ImageWithListComponent = ({
   tableType,
   questionType = "table",
@@ -73,13 +92,26 @@ const ImageWithListComponent = ({
   pagination = true,
 }) => {
   const [open, setOpen] = useState(false);
+  const [teachers, setTeachers] = useState([]);
 
+  const { data } = GetTeacherHook();
+  useEffect(() => {
+    if (tableType === "topic") {
+      setTeachers(data?.data?.data);
+    }
+  }, []);
   const initialValues = {
     firstName: "",
     lastName: "",
     middleName: "",
     userName: "",
     password: "",
+  };
+
+  const topicInitialValues = {
+    topic: "",
+    instructor: "",
+    year: "",
   };
 
   const handleOpen = () => {
@@ -109,6 +141,37 @@ const ImageWithListComponent = ({
     if (isError) {
       return setError(isError);
     }
+    setOpen(false);
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "Teacher created successfully",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+
+  const handleSubmitTopic = (values) => {
+    // setFormData({
+    //   username:values.userName,
+    //   middlename:values.middleName,
+    //   firstname:values.firstName,
+    //   lastname:values.lastName,
+    //   password:values.password
+    //  })
+    // mutate({
+    //   username: values.userName,
+    //   password: values.password,
+    //   lastname: values.lastName,
+    //   firstname: values.firstName,
+    //   middlename: values.middleName,
+    // });
+    // if (isError) {
+    //   return setError(isError);
+    // }
+
+    createTopic(values);
+
     setOpen(false);
     Swal.fire({
       position: "center",
@@ -189,78 +252,143 @@ const ImageWithListComponent = ({
                 color: "white",
               }}
             />
-            <Modal
-              hideBackdrop
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="child-modal-title"
-              aria-describedby="child-modal-description"
-            >
-              <Box sx={{ ...style }}>
-                <Formik
-                  initialValues={initialValues}
-                  validationSchema={teacherSchema}
-                  onSubmit={(values) => {
-                    handleSubmit(values);
-                  }}
-                >
-                  {({ errors, touched }) => (
-                    <Form
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        flexDirection: "column",
-                        gap: 10,
-                      }}
-                    >
-                      <Typography variant="h6">Add Teacher</Typography>
-                      <Field name="firstName" placeholder="firstname" />
-                      {errors.firstName && touched.firstName ? (
-                        <p style={{ fontSize: "1em", color: "red" }}>
-                          {errors.firstName}
-                        </p>
-                      ) : null}
-                      <Field name="middleName" placeholder="middlename" />
-                      {errors.middleName && touched.middleName ? (
-                        <p style={{ fontSize: "1em", color: "red" }}>
-                          {errors.middleName}
-                        </p>
-                      ) : null}
-                      <Field name="lastName" placeholder="lastname" />
-                      {errors.lastName && touched.lastName ? (
-                        <p style={{ fontSize: "1em", color: "red" }}>
-                          {errors.lastName}
-                        </p>
-                      ) : null}
+            {tableType === "teacher" ? (
+              <Modal
+                hideBackdrop
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="child-modal-title"
+                aria-describedby="child-modal-description"
+              >
+                <Box sx={{ ...style }}>
+                  <Formik
+                    initialValues={initialValues}
+                    validationSchema={teacherSchema}
+                    onSubmit={(values) => {
+                      handleSubmit(values);
+                    }}
+                  >
+                    {({ errors, touched }) => (
+                      <Form
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          flexDirection: "column",
+                          gap: 10,
+                        }}
+                      >
+                        <Typography variant="h6">Add Teacher</Typography>
+                        <Field name="firstName" placeholder="firstname" />
+                        {errors.firstName && touched.firstName ? (
+                          <p style={{ fontSize: "1em", color: "red" }}>
+                            {errors.firstName}
+                          </p>
+                        ) : null}
+                        <Field name="middleName" placeholder="middlename" />
+                        {errors.middleName && touched.middleName ? (
+                          <p style={{ fontSize: "1em", color: "red" }}>
+                            {errors.middleName}
+                          </p>
+                        ) : null}
+                        <Field name="lastName" placeholder="lastname" />
+                        {errors.lastName && touched.lastName ? (
+                          <p style={{ fontSize: "1em", color: "red" }}>
+                            {errors.lastName}
+                          </p>
+                        ) : null}
 
-                      <Field
-                        name="userName"
-                        placeholder="username"
-                        type="text"
-                      />
-                      {errors.userName && touched.userName ? (
-                        <p style={{ fontSize: "1em", color: "red" }}>
-                          {errors.userName}
-                        </p>
-                      ) : null}
-                      <Field
-                        name="password"
-                        type="password"
-                        placeholder="password"
-                      />
-                      {errors.password && touched.password ? (
-                        <p style={{ fontSize: "1em", color: "red" }}>
-                          {errors.password}
-                        </p>
-                      ) : null}
+                        <Field
+                          name="userName"
+                          placeholder="username"
+                          type="text"
+                        />
+                        {errors.userName && touched.userName ? (
+                          <p style={{ fontSize: "1em", color: "red" }}>
+                            {errors.userName}
+                          </p>
+                        ) : null}
+                        <Field
+                          name="password"
+                          type="password"
+                          placeholder="password"
+                        />
+                        {errors.password && touched.password ? (
+                          <p style={{ fontSize: "1em", color: "red" }}>
+                            {errors.password}
+                          </p>
+                        ) : null}
 
-                      <Button type="submit">Apply</Button>
-                      <Button onClick={handleClose}>Close</Button>
-                    </Form>
-                  )}
-                </Formik>
-              </Box>
-            </Modal>
+                        <Button type="submit">Apply</Button>
+                        <Button onClick={handleClose}>Close</Button>
+                      </Form>
+                    )}
+                  </Formik>
+                </Box>
+              </Modal>
+            ) : (
+              <Modal
+                hideBackdrop
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="child-modal-title"
+                aria-describedby="child-modal-description"
+              >
+                <Box sx={{ ...style }}>
+                  <Formik
+                    initialValues={topicInitialValues}
+                    validationSchema={topicSchema}
+                    onSubmit={(values) => {
+                      handleSubmitTopic(values);
+                    }}
+                  >
+                    {({ errors, touched }) => (
+                      <Form
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          flexDirection: "column",
+                          gap: 10,
+                        }}
+                      >
+                        <Typography variant="h6">Add Teacher</Typography>
+                        <Field name="topic" placeholder="Topic" />
+                        {errors.topic && touched.topic ? (
+                          <p style={{ fontSize: "1em", color: "red" }}>
+                            {errors.topic}
+                          </p>
+                        ) : null}
+                        <Field
+                          component="select"
+                          id="instructor"
+                          name="instructor"
+                        >
+                          <option value="">Select instructor</option>
+                          {teachers.map((item) => (
+                            <option
+                              value={item?._id}
+                            >{`${item?.firstname} ${item?.lastname}`}</option>
+                          ))}
+                        </Field>
+                        {errors.instructor && touched.instructor ? (
+                          <p style={{ fontSize: "1em", color: "red" }}>
+                            {errors.instructor}
+                          </p>
+                        ) : null}
+                        <Field name="year" placeholder="year" />
+                        {errors.year && touched.year ? (
+                          <p style={{ fontSize: "1em", color: "red" }}>
+                            {errors.year}
+                          </p>
+                        ) : null}
+
+                        <Button type="submit">Apply</Button>
+                        <Button onClick={handleClose}>Close</Button>
+                      </Form>
+                    )}
+                  </Formik>
+                </Box>
+              </Modal>
+            )}
           </Box>
         )}
       </Box>

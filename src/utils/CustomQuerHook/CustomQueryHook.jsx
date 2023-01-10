@@ -2,22 +2,29 @@ import axios from "axios";
 import { Snackbar } from "@mui/material";
 import React from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-
+const baseUrl = "http://localhost:5000/api";
 const createTeacher = async (data) => {
-  return await axios.post("http://localhost:5000/api/create-teacher", data);
+  return await axios.post(baseUrl + "/create-teacher", data);
 };
 const getTeacher = async () => {
-  return await axios.get("http://localhost:5000/api/teacher");
+  return await axios.get(baseUrl + "/teacher");
 };
 const deleteTeacher = async (data) => {
-  return await axios.delete(`http://localhost:5000/api/teacher/${data}`);
+  return await axios.delete(`${baseUrl}/teacher/${data}`);
 };
-const editTeacher=async(body)=>{
-  const response= await axios.put(`http://localhost:5000/api/teacher`,body)
-  return response.data
-}
+const editTeacher = async (body) => {
+  const response = await axios.put(`${baseUrl}/teacher`, body);
+  return response.data;
+};
 const getSingleTeacher = async (data) => {
-  return await axios.get(`http://localhost:5000/api/teacher/${data}`);
+  return await axios.get(`${baseUrl}/teacher/${data}`);
+};
+
+export const createTopic = async (data) => {
+  return await axios.post(baseUrl + "/topic", data);
+};
+const getTopic = async () => {
+  return await axios.get(baseUrl + "/topic");
 };
 
 export const UseCreateTeacherHooks = () => {
@@ -55,15 +62,20 @@ export const UpdateTeacherHook = () => {
     onError: ({ message }) => {},
   });
 };
-export const UseUpdate=()=>{
-  return useMutation(
-    (variables) => {
-      return axios.put('http://localhost:5000/api/teacher', variables);
-    }
-  );
-}
+export const UseUpdate = () => {
+  return useMutation((variables) => {
+    return axios.put("http://localhost:5000/api/teacher", variables);
+  });
+};
 export const GetSingleTeacherHook = (onSuccess, onError) => {
   return useQuery("teacher-single-data", getSingleTeacher, {
+    onSuccess,
+    onError,
+  });
+};
+
+export const GetTopicHook = (onSuccess, onError) => {
+  return useQuery("topic-data", getTopic, {
     onSuccess,
     onError,
   });

@@ -133,7 +133,7 @@ export const topicsDataHead = [
     title: "Generated Code",
   },
   {
-    title: "Topics",
+    title: "topic",
   },
   {
     title: "Instructor",
